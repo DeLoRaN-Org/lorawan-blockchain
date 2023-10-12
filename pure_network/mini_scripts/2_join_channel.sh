@@ -1,0 +1,1 @@
+CORE_PEER_MSPCONFIGPATH=/opt/fabric/crypto/admin-certs/msp peer channel join -b /root/channel-artifacts/lorawan.block --tls

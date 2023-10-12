@@ -1,0 +1,74 @@
+[
+    {
+        "name": "sessionCollection_Org1MSP",
+        "policy": "OR('Org1MSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 1,
+        "blockToLive": 1000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true,
+        "endorsementPolicy": {
+            "signaturePolicy": "OR('Org1MSP.member')"
+        }
+    },
+    {
+        "name": "sessionCollection_Org2MSP",
+        "policy": "OR('Org2MSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 1,
+        "blockToLive": 1000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true,
+        "endorsementPolicy": {
+            "signaturePolicy": "OR('Org2MSP.member')"
+        }
+    },
+    {
+        "name": "sessionCollection_Org3MSP",
+        "policy": "OR('Org3MSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 1,
+        "blockToLive": 1000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true,
+        "endorsementPolicy": {
+            "signaturePolicy": "OR('Org3MSP.member')"
+        }
+    },
+    {
+        "name": "packetsCollection_Org1MSP",
+        "policy": "OR('Org1MSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 1,
+        "blockToLive": 1000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true,
+        "endorsementPolicy": {
+            "signaturePolicy": "OR('Org1MSP.member')"
+        }
+    },
+    {
+        "name": "packetsCollection_Org2MSP",
+        "policy": "OR('Org2MSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 1,
+        "blockToLive": 1000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true,
+        "endorsementPolicy": {
+            "signaturePolicy": "OR('Org2MSP.member')"
+        }
+    },
+    {
+        "name": "packetsCollection_Org3MSP",
+        "policy": "OR('Org3MSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 1,
+        "blockToLive": 1000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true,
+        "endorsementPolicy": {
+            "signaturePolicy": "OR('Org3MSP.member')"
+        }
+    }
+]

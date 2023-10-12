@@ -1,0 +1,1 @@
+screen -S "peer" -d -m peer node start

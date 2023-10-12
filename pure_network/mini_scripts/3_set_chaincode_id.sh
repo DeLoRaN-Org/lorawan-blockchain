@@ -1,0 +1,1 @@
+export CHAINCODE_ID=$(peer lifecycle chaincode calculatepackageid /root/chaincode-external/lorawan.tgz)

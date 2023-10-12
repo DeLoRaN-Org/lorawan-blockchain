@@ -1,0 +1,307 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# ---------------------------------------------------------------------------
+# "OrdererOrgs" - Definition of organizations managing orderer nodes
+# ---------------------------------------------------------------------------
+OrdererOrgs:
+  - Name: Orderer
+    Domain: orderers.dlwan.phd
+    EnableNodeOUs: true
+
+    Specs:
+      - Hostname: orderer1
+        SANS:
+          #- 10.17.119.1
+          - orderer1.orderers.dlwan.phd
+      - Hostname: orderer2
+        SANS:
+          #- 10.17.119.1
+          - orderer2.orderers.dlwan.phd
+      - Hostname: orderer3
+        SANS:
+          #- 10.17.119.1
+          - orderer3.orderers.dlwan.phd
+      - Hostname: orderer4
+        SANS:
+          #- 10.17.119.1
+          - orderer4.orderers.dlwan.phd
+      - Hostname: orderer5
+        SANS:
+          #- 10.17.119.1
+          - orderer5.orderers.dlwan.phd
+      - Hostname: orderer6
+        SANS:
+          #- 10.17.119.1
+          - orderer6.orderers.dlwan.phd
+      - Hostname: orderer7
+        SANS:
+          #- 10.17.119.1
+          - orderer7.orderers.dlwan.phd
+      - Hostname: orderer8
+        SANS:
+          #- 10.17.119.1
+          - orderer8.orderers.dlwan.phd
+      - Hostname: orderer9
+        SANS:
+          #- 10.17.119.1
+          - orderer9.orderers.dlwan.phd
+      - Hostname: orderer10
+        SANS:
+          #- 10.17.119.1
+          - orderer10.orderers.dlwan.phd
+      - Hostname: orderer11
+        SANS:
+          #- 10.17.119.1
+          - orderer11.orderers.dlwan.phd
+      - Hostname: orderer12
+        SANS:
+          #- 10.17.119.1
+          - orderer12.orderers.dlwan.phd
+      - Hostname: orderer13
+        SANS:
+          #- 10.17.119.1
+          - orderer13.orderers.dlwan.phd
+      - Hostname: orderer14
+        SANS:
+          #- 10.17.119.1
+          - orderer14.orderers.dlwan.phd
+      - Hostname: orderer15
+        SANS:
+          #- 10.17.119.1
+          - orderer15.orderers.dlwan.phd
+      - Hostname: orderer16
+        SANS:
+          #- 10.17.119.1
+          - orderer16.orderers.dlwan.phd
+
+# ---------------------------------------------------------------------------
+# "PeerOrgs" - Definition of organizations managing peer nodes
+# ---------------------------------------------------------------------------
+PeerOrgs:
+  - Name: Org1
+    Domain: org1.dlwan.phd
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: peer0
+        SANS:
+          #- 10.17.119.37
+          - peer0.org1.dlwan.phd
+      - Hostname: peer1
+        SANS:
+          #- 10.17.119.124
+          - peer1.org1.dlwan.phd
+      - Hostname: peer2
+        SANS:
+          #- 10.17.119.126
+          - peer2.org1.dlwan.phd
+      - Hostname: peer3
+        SANS:
+          #- 10.17.119.1
+          - peer3.org1.dlwan.phd
+      - Hostname: peer4
+        SANS:
+          #- 10.17.119.1
+          - peer4.org1.dlwan.phd
+      - Hostname: peer5
+        SANS:
+          #- 10.17.119.37
+          - peer5.org1.dlwan.phd
+      - Hostname: peer6
+        SANS:
+          #- 10.17.119.124
+          - peer6.org1.dlwan.phd
+      - Hostname: peer7
+        SANS:
+          #- 10.17.119.126
+          - peer7.org1.dlwan.phd
+      - Hostname: peer8
+        SANS:
+          #- 10.17.119.1
+          - peer8.org1.dlwan.phd
+      - Hostname: peer9
+        SANS:
+          #- 10.17.119.1
+          - peer9.org1.dlwan.phd
+      - Hostname: peer10
+        SANS:
+          #- 10.17.119.37
+          - peer10.org1.dlwan.phd
+      - Hostname: peer11
+        SANS:
+          #- 10.17.119.124
+          - peer11.org1.dlwan.phd
+      - Hostname: peer12
+        SANS:
+          #- 10.17.119.126
+          - peer12.org1.dlwan.phd
+      - Hostname: peer14
+        SANS:
+          #- 10.17.119.1
+          - peer14.org1.dlwan.phd
+      - Hostname: peer15
+        SANS:
+          #- 10.17.119.1
+          - peer15.org1.dlwan.phd
+      - Hostname: peer16
+        SANS:
+          #- 10.17.119.37
+          - peer16.org1.dlwan.phd
+    #Template:
+    #  Count: 2
+    #  SANS:
+    #    #- 10.17.119.37
+    Users:
+      Count: 2
+
+  - Name: Org2
+    Domain: org2.dlwan.phd
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: peer0
+        SANS:
+          #- 10.17.119.37
+          - peer0.org2.dlwan.phd
+      - Hostname: peer1
+        SANS:
+          #- 10.17.119.124
+          - peer1.org2.dlwan.phd
+      - Hostname: peer2
+        SANS:
+          #- 10.17.119.126
+          - peer2.org2.dlwan.phd
+      - Hostname: peer3
+        SANS:
+          #- 10.17.119.1
+          - peer3.org2.dlwan.phd
+      - Hostname: peer4
+        SANS:
+          #- 10.17.119.1
+          - peer4.org2.dlwan.phd
+      - Hostname: peer5
+        SANS:
+          #- 10.17.119.37
+          - peer5.org2.dlwan.phd
+      - Hostname: peer6
+        SANS:
+          #- 10.17.119.124
+          - peer6.org2.dlwan.phd
+      - Hostname: peer7
+        SANS:
+          #- 10.17.119.126
+          - peer7.org2.dlwan.phd
+      - Hostname: peer8
+        SANS:
+          #- 10.17.119.1
+          - peer8.org2.dlwan.phd
+      - Hostname: peer9
+        SANS:
+          #- 10.17.119.1
+          - peer9.org2.dlwan.phd
+      - Hostname: peer10
+        SANS:
+          #- 10.17.119.37
+          - peer10.org2.dlwan.phd
+      - Hostname: peer11
+        SANS:
+          #- 10.17.119.124
+          - peer11.org2.dlwan.phd
+      - Hostname: peer12
+        SANS:
+          #- 10.17.119.126
+          - peer12.org2.dlwan.phd
+      - Hostname: peer14
+        SANS:
+          #- 10.17.119.1
+          - peer14.org2.dlwan.phd
+      - Hostname: peer15
+        SANS:
+          #- 10.17.119.1
+          - peer15.org2.dlwan.phd
+      - Hostname: peer16
+        SANS:
+          #- 10.17.119.37
+          - peer16.org2.dlwan.phd
+    #Template:
+    #  Count: 2
+    #  SANS:
+    #    #- 10.17.119.37
+    Users:
+      Count: 2
+  
+  - Name: Org3
+    Domain: org3.dlwan.phd
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: peer0
+        SANS:
+          #- 10.17.119.37
+          - peer0.org3.dlwan.phd
+      - Hostname: peer1
+        SANS:
+          #- 10.17.119.124
+          - peer1.org3.dlwan.phd
+      - Hostname: peer2
+        SANS:
+          #- 10.17.119.126
+          - peer2.org3.dlwan.phd
+      - Hostname: peer3
+        SANS:
+          #- 10.17.119.1
+          - peer3.org3.dlwan.phd
+      - Hostname: peer4
+        SANS:
+          #- 10.17.119.1
+          - peer4.org3.dlwan.phd
+      - Hostname: peer5
+        SANS:
+          #- 10.17.119.37
+          - peer5.org3.dlwan.phd
+      - Hostname: peer6
+        SANS:
+          #- 10.17.119.124
+          - peer6.org3.dlwan.phd
+      - Hostname: peer7
+        SANS:
+          #- 10.17.119.126
+          - peer7.org3.dlwan.phd
+      - Hostname: peer8
+        SANS:
+          #- 10.17.119.1
+          - peer8.org3.dlwan.phd
+      - Hostname: peer9
+        SANS:
+          #- 10.17.119.1
+          - peer9.org3.dlwan.phd
+      - Hostname: peer10
+        SANS:
+          #- 10.17.119.37
+          - peer10.org3.dlwan.phd
+      - Hostname: peer11
+        SANS:
+          #- 10.17.119.124
+          - peer11.org3.dlwan.phd
+      - Hostname: peer12
+        SANS:
+          #- 10.17.119.126
+          - peer12.org3.dlwan.phd
+      - Hostname: peer14
+        SANS:
+          #- 10.17.119.1
+          - peer14.org3.dlwan.phd
+      - Hostname: peer15
+        SANS:
+          #- 10.17.119.1
+          - peer15.org3.dlwan.phd
+      - Hostname: peer16
+        SANS:
+          #- 10.17.119.37
+          - peer16.org3.dlwan.phd
+    #Template:
+    #  Count: 2
+    #  SANS:
+    #    #- 10.17.119.37
+    Users:
+      Count: 2

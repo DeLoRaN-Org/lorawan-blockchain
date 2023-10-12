@@ -1,0 +1,1 @@
+./network.sh up createChannel -c lorawan -ca && ./network.sh deployCC -c lorawan -ccn lorawan-chaincode -ccp ../application_and_chaincode/chaincode-ts-lorawan -ccl typescript -ccep "OR('Org1MSP.peer','Org2MSP.peer')" -cccg ../config/collections_config.json  && ./monitordocker.sh

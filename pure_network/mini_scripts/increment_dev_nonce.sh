@@ -1,0 +1,1 @@
+jq '.devices |= map(.configuration.dev_nonce += 1)' $1 > temp.json && mv temp.json $1

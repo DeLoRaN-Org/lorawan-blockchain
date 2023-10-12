@@ -1,0 +1,1 @@
+peer lifecycle chaincode install /root/chaincode-external/lorawan.tgz --peerAddresses peer${1}.org${PEER_ORG_ID}.dlwan.phd:7051 --tlsRootCertFiles /opt/fabric/crypto/peer/msp/tlscacerts/tlsca.org${PEER_ORG_ID}.dlwan.phd-cert.pem
