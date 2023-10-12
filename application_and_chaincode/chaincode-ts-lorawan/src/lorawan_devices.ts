@@ -133,7 +133,7 @@ export class LoRaWANDevices extends Contract {
     }*/
 
     @Transaction(false)
-    public async ReadDevice(ctx: Context, dev_eui: string): Promise<string> {
+    public async ReadDevice(ctx: Context, dev_eui: string): BlockchainAns<string> {
         //console.log('Invoked ReadDevice')
         
         const assetJSON = await ctx.stub.getState(dev_eui);
@@ -149,15 +149,17 @@ export class LoRaWANDevices extends Contract {
             //if (!this.verifyClientOrgMatchesPeerOrg(ctx)) return
             if (!this.verifyClientOrgMatchesOwnerOrg(ctx, device_config)) return
             let ans = await this.ReadDeviceSession(ctx, Buffer.from(device_config.dev_addr).toString('hex'))
-            device_sess = JSON.parse(ans).content
+            device_sess = JSON.parse(ans.content)
         }
         let device: Device = DeviceHelper.from_conf_session(device_config, device_sess)
         
-        return stringify(sortKeysRecursive({ content: device }, {ignoreArrayAtKeys: ignoredKeys}))
+        return {
+            content: stringify(sortKeysRecursive(device, {ignoreArrayAtKeys: ignoredKeys}))
+        }
     }
     
     @Transaction(false)
-    public async ReadDeviceConfig(ctx: Context, dev_eui: string): Promise<string> {
+    public async ReadDeviceConfig(ctx: Context, dev_eui: string): BlockchainAns<string> {
         //console.log('Invoked ReadDeviceConfig')
 
         const assetJSON = await ctx.stub.getState(dev_eui);
@@ -165,11 +167,13 @@ export class LoRaWANDevices extends Contract {
             throw new Error(`The device ${dev_eui} does not exist`);
         }
         let device: Device = JSON.parse(assetJSON.toString());
-        return stringify(sortKeysRecursive({ content: device }, {ignoreArrayAtKeys: ignoredKeys}))
+        return {
+            content: stringify(sortKeysRecursive(device , {ignoreArrayAtKeys: ignoredKeys}))
+        } 
     }
 
     @Transaction(false)
-    public async ReadDeviceSession(ctx: Context, dev_addr: string): Promise<string> {
+    public async ReadDeviceSession(ctx: Context, dev_addr: string): BlockchainAns<string> {
         //console.log('Invoked ReadDeviceSessions')
         //if (!this.verifyClientOrgMatchesPeerOrg(ctx)) return
 
@@ -180,7 +184,9 @@ export class LoRaWANDevices extends Contract {
         let session: DeviceSession = JSON.parse(assetJSON.toString());
         if (!this.verifyClientOrgMatchesOwnerOrg(ctx, session)) return
 
-        return stringify(sortKeysRecursive({ content: session }, {ignoreArrayAtKeys: ignoredKeys}))
+        return {
+            content: stringify(sortKeysRecursive(session, {ignoreArrayAtKeys: ignoredKeys}))
+        }       
     }
 
     // DeleteAsset deletes an given asset from the world state.
@@ -252,7 +258,7 @@ export class LoRaWANDevices extends Contract {
     @Transaction()
     public async TransferDevice(ctx: Context, dev_eui: string, newOwner: string): BlockchainAns<string> {
         const assetString = await this.ReadDeviceConfig(ctx, dev_eui);
-        const asset: Device = JSON.parse(assetString).content;
+        const asset: Device = JSON.parse(assetString.content);
         const oldOwner = asset.owner;
         asset.owner = newOwner;
 
@@ -305,7 +311,7 @@ export class LoRaWANDevices extends Contract {
     // GetAllAssets returns all assets found in the world state.
     @Transaction(false)
     @Returns('string')
-    public async GetAllDevices(ctx: Context): Promise<string> {
+    public async GetAllDevices(ctx: Context): BlockchainAns<string> {
         const allResults = {
             configs: [],
             sessions: [],
@@ -326,7 +332,9 @@ export class LoRaWANDevices extends Contract {
             result = await iterator.next();
         }
 
-        return stringify(sortKeysRecursive({ content: allResults }, {ignoreArrayAtKeys: ignoredKeys}))
+        return {
+            content: stringify(sortKeysRecursive(allResults, {ignoreArrayAtKeys: ignoredKeys})) 
+        }
     }
 
     @Transaction(false)

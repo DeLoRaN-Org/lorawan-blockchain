@@ -433,7 +433,9 @@ export class LoRaWANPackets extends Contract {
             throw new Error(`The packet ${hash} does not exist`);
         }
         let packet: ChainLoRaWANPacket = JSON.parse(assetJSON.toString());
-        return stringify(sortKeysRecursive({ content: packet }, {ignoreArrayAtKeys: ignoredKeys}))
+        return {
+            content: stringify(sortKeysRecursive(packet, {ignoreArrayAtKeys: ignoredKeys}))
+        } 
     }
     
     @Transaction(false)
@@ -443,7 +445,9 @@ export class LoRaWANPackets extends Contract {
             throw new Error(`The packet ${hash} does not exist`);
         }
         let packet: ChainLoRaWANPacket = JSON.parse(assetJSON.toString());
-        return stringify(sortKeysRecursive({ content: packet }, {ignoreArrayAtKeys: ignoredKeys}))
+        return {
+            content: stringify(sortKeysRecursive(packet, {ignoreArrayAtKeys: ignoredKeys}))
+        }
     }
 
     @Transaction(false)
@@ -477,7 +481,8 @@ export class LoRaWANPackets extends Contract {
             }
             result = await iterator.next();
         }
-
-        return stringify(sortKeysRecursive({ content: allResults }, {ignoreArrayAtKeys: ignoredKeys}))
+        return {
+            content: stringify(sortKeysRecursive(allResults, {ignoreArrayAtKeys: ignoredKeys}))
+        }
     }
 }
