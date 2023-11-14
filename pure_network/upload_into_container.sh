@@ -3,6 +3,7 @@
 nc=""
 PEER_PER_ORG=0
 ORG_NUM=0
+ORDERER_NUM=16
 #JSON_FILE_PATH="/home/thecave3/Downloads/reservation_138024.json"
 JSON_FILE_PATH=""
 RANDOM_HOST_FILENAME="hosts_file_$RANDOM.txt"
@@ -21,7 +22,7 @@ for var in "$@"; do
     if [[ "--network-controller" == "${var}" || "-nc" == "${var}" ]]; then
         echo "Building preloader release binary..."
         current_wd=$(pwd)
-        cd ../../distributed-network-controller/preloader/
+        cd ../../DeLoRaN/preloader/
         cargo b --release
         cd $current_wd
         nc="-nc"
@@ -47,7 +48,7 @@ done
 # Distribute addresses to PEER_ADDRESSES, DEVICE_ADDRESSES, and ORDERER_ADDRESS
 PEER_ADDRESSES=()
 DEVICE_ADDRESSES=()
-ORDERER_ADDRESS=()
+ORDERER_ADDRESS=""
 
 for ((i = 0; i < ${#ADDRESSES[@]}; i++)); do
     if [ "$i" -lt "$((PEER_PER_ORG * ORG_NUM))" ]; then
@@ -55,7 +56,7 @@ for ((i = 0; i < ${#ADDRESSES[@]}; i++)); do
     elif [ "$i" -lt "$((${#ADDRESSES[@]} - 1))" ]; then
         DEVICE_ADDRESSES+=("${ADDRESSES[i]}")
     else
-        ORDERER_ADDRESS+=("${ADDRESSES[i]}")
+        ORDERER_ADDRESS="${ADDRESSES[i]}"
     fi
 done
 
@@ -64,7 +65,8 @@ echo "PEER_PER_ORG=$PEER_PER_ORG"
 echo "ORG_NUM=$ORG_NUM"
 echo "PEER_ADDRESSES=(${PEER_ADDRESSES[*]})"
 echo "DEVICE_ADDRESSES=(${DEVICE_ADDRESSES[*]})"
-echo "ORDERER_ADDRESS=(${ORDERER_ADDRESS[*]})"
+echo "ORDERER_ADDRESS=${ORDERER_ADDRESS}"
+echo "ORDERER_NUM=${ORDERER_NUM}"
 
 uploadToPeer() {
     PEER_ADDR=$1
@@ -109,10 +111,10 @@ uploadToPeer() {
 
     for var in "$@"; do
         if [[ "--network-controller" == "${var}" || "-nc" == "${var}" ]]; then
-            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../../distributed-network-controller/ -e                                                     ssh $PEER_ADDR:/root/distributed-network-controller
-            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../distributed-network-controller/preloader/*.json -e                                     ssh $PEER_ADDR:/opt/network-controller/config/
-            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../distributed-network-controller/preloader/src/sdr-lora-merged.py -e                     ssh $PEER_ADDR:/opt/network-controller/config/lora.py
-            #rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../distributed-network-controller/preloader/target/release/preloader              -e      ssh $PEER_ADDR:/opt/network-controller/bin/
+            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../../DeLoRaN/ -e                                                     ssh $PEER_ADDR:/root/distributed-network-controller
+            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/*.json -e                                     ssh $PEER_ADDR:/opt/network-controller/config/
+            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/src/sdr-lora-merged.py -e                     ssh $PEER_ADDR:/opt/network-controller/config/lora.py
+            #rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/target/release/preloader              -e      ssh $PEER_ADDR:/opt/network-controller/bin/
             rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../application_and_chaincode/chaincode-ts-lorawan/ -e      ssh $PEER_ADDR:/root/chaincode
         fi
 
@@ -127,10 +129,10 @@ uploadToPeer() {
             echo "export DEVICE=\"true\"" >> ./temp_folder/$RANDOM_SOURCE_PEER_FILENAME
         fi
         if [[ "--all" == "${var}" ]]; then
-            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../../distributed-network-controller/ -e                                                     ssh $PEER_ADDR:/root/distributed-network-controller
-            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../distributed-network-controller/preloader/*.json -e                                     ssh $PEER_ADDR:/opt/network-controller/config/
-            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../distributed-network-controller/preloader/src/sdr-lora-merged.py -e                     ssh $PEER_ADDR:/opt/network-controller/config/lora.py
-            #rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../distributed-network-controller/preloader/target/release/preloader              -e      ssh $PEER_ADDR:/opt/network-controller/bin/
+            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../../DeLoRaN/ -e                                                     ssh $PEER_ADDR:/root/distributed-network-controller
+            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/*.json -e                                     ssh $PEER_ADDR:/opt/network-controller/config/
+            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/src/sdr-lora-merged.py -e                     ssh $PEER_ADDR:/opt/network-controller/config/lora.py
+            #rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/target/release/preloader              -e      ssh $PEER_ADDR:/opt/network-controller/bin/
             rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../application_and_chaincode/chaincode-ts-lorawan/ -e      ssh $PEER_ADDR:/root/chaincode
     
             rsync -q -u --mkpath -av --exclude=**/.git --exclude=**/node_modules --exclude=**/target --exclude=**/*.pdf ${PWD}/crypto-config/peerOrganizations/org${PEER_ORG_ID}.dlwan.phd/users/Admin@org${PEER_ORG_ID}.dlwan.phd/ -e 'ssh -q' $PEER_ADDR:/opt/fabric/crypto/admin-certs
@@ -149,7 +151,7 @@ uploadToDevice() {
 
     echo "Device ${PEER_ADDR}"
     rsync -q -u --mkpath -av --exclude=**/.git --exclude=**/node_modules --exclude=**/target --exclude=**/*.pdf ${PWD}/mini_scripts/vivado_commands.sh -e 'ssh -q' $PEER_ADDR:/root/vivado_commands.sh
-    rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../../distributed-network-controller/ -e 'ssh -q' $PEER_ADDR:/root/distributed-network-controller
+    rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../../DeLoRaN/ -e 'ssh -q' $PEER_ADDR:/root/distributed-network-controller
     rsync -q -u --mkpath -av --exclude=**/.git --exclude=**/node_modules --exclude=**/target --exclude=**/*.pdf ${PWD}/temp_folder/$RANDOM_HOST_FILENAME -e 'ssh -q' root@${ORDERER_ADDRESS}:/etc/hosts
 
 }
@@ -162,10 +164,12 @@ convert_to_ip() {
 }
 
 uploadToOrderer() {
-    echo "uploading to orderers at $ORDERER_ADDRESS"
-    rsync -q -u --mkpath -av --exclude=**/.git --exclude=**/test-network* --exclude=**/useless_scripts --exclude=**/node_modules --exclude=**/target --exclude=**/*.pdf ${PWD} -e 'ssh -q' root@${ORDERER_ADDRESS}:/root
-    rsync -q -u --mkpath -av --exclude=**/.git --exclude=**/node_modules --exclude=**/target --exclude=**/*.pdf ${PWD}/temp_folder/$RANDOM_HOST_FILENAME -e 'ssh -q' root@${ORDERER_ADDRESS}:/etc/hosts
-    rsync -q -u --mkpath -av --exclude=**/.git --exclude=**/node_modules --exclude=**/target --exclude=**/*.pdf ${PWD}/mini_scripts/network_monitor.sh -e 'ssh -q' root@${ORDERER_ADDRESS}:/root/network_monitor.sh
+    if [[ -n "${ORDERER_ADDRESS}" ]]; then
+        echo "uploading to orderers at $ORDERER_ADDRESS"
+        rsync -q -u --mkpath -av --exclude=**/.git --exclude=**/test-network* --exclude=**/useless_scripts --exclude=**/node_modules --exclude=**/target --exclude=**/*.pdf ${PWD} -e 'ssh -q' root@${ORDERER_ADDRESS}:/root
+        rsync -q -u --mkpath -av --exclude=**/.git --exclude=**/node_modules --exclude=**/target --exclude=**/*.pdf ${PWD}/temp_folder/$RANDOM_HOST_FILENAME -e 'ssh -q' root@${ORDERER_ADDRESS}:/etc/hosts
+        rsync -q -u --mkpath -av --exclude=**/.git --exclude=**/node_modules --exclude=**/target --exclude=**/*.pdf ${PWD}/mini_scripts/network_monitor.sh -e 'ssh -q' root@${ORDERER_ADDRESS}:/root/network_monitor.sh
+    fi
 }
 
 
@@ -192,6 +196,20 @@ uploadAll() {
 
 createHostsFile() {
     cat ./hosts_file_base.txt  >> ./temp_folder/$RANDOM_HOST_FILENAME
+
+    if [ $PEER_PER_ORG -eq 0 ]; then
+        echo "## WARNING!! ## PEER_PER_ORG is 0"
+    fi
+    if [ $ORG_NUM -eq 0 ]; then
+        echo "## WARNING!! ## ORG_NUM is 0"
+    fi
+    if [ $ORDERER_NUM -eq 0 ]; then
+        echo "## WARNING!! ## ORDERER_NUM is 0"
+    fi
+    if [ ! -n "${ORDERER_ADDRESS}" ]; then
+        echo "## WARNING!! ## ORDERER_ADDRESS is empty"
+    fi
+
     for (( i=0; i < PEER_PER_ORG; i++)); do
         for (( j=0; j < ORG_NUM; j++)); do
             ip=$(convert_to_ip "${PEER_ADDRESSES[$((${i} * ${ORG_NUM} + ${j}))]}")
@@ -200,11 +218,14 @@ createHostsFile() {
         done
     done
 
-    ip=$(convert_to_ip "${ORDERER_ADDRESS}")
+    if [[ -n "${ORDERER_ADDRESS}" ]]; then
+        ip=$(convert_to_ip "${ORDERER_ADDRESS}")
+        
+        for (( i=1; i <= ORDERER_NUM; i++)); do
+            echo "$ip orderer$i.orderers.dlwan.phd" >> ./temp_folder/$RANDOM_HOST_FILENAME
+        done
+    fi
 
-    for (( i=1; i <= 16; i++)); do
-        echo "$ip orderer$i.orderers.dlwan.phd" >> ./temp_folder/$RANDOM_HOST_FILENAME
-    done
 }
 
 cleanTempData() {
