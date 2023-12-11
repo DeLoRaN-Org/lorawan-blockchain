@@ -351,4 +351,31 @@ export class LoRaWANDevices extends Contract {
             content: dev_owner
         }
     }
+    
+    @Transaction(true)
+    public async CreateFlag(ctx: Context): BlockchainAns<void> {
+        //console.log('Invoked GetDeviceOrg')
+        await ctx.stub.putState(`ConvergenceFlagTest`, Buffer.from('imaconvergenceflagtest'));
+        //console.log(dev_owner)
+        return {}
+    }
+
+    @Transaction(true)
+    public async ClearFlag(ctx: Context): BlockchainAns<void> {
+        //console.log('Invoked GetDeviceOrg')
+        await ctx.stub.putState(`ConvergenceFlagTest`, Buffer.from("notaflag"));
+        return {}
+    }
+    
+    @Transaction()
+    public async ReadFlag(ctx: Context): BlockchainAns<string> {
+        //console.log('Invoked GetDeviceOrg')
+
+        let asset = await ctx.stub.getState(`ConvergenceFlagTest`) || Buffer.from("notaflag");
+        let dev_owner =  asset.toString();
+        //console.log(dev_owner)
+        return {
+            content: dev_owner
+        }
+    }
 }
