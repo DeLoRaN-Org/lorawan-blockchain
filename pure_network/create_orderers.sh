@@ -5,7 +5,7 @@
 set -e
 
 # look for binaries in local dev environment /build/bin directory and then in local samples /bin directory
-export PATH="${PWD}"/bin:"$PATH"
+export PATH="/home/nc/fabric/build/bin:${PWD}"/bin:"$PATH"
 export FABRIC_CFG_PATH="${PWD}"/config
 export FABRIC_LOGGING_SPEC=debug:cauthdsl,policies,msp,common.configtx,common.channelconfig=info
 export ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
@@ -16,7 +16,7 @@ export ORDERER_CHANNELPARTICIPATION_ENABLED=true
 
 if [[ -z "$1" ]]; then
     echo "Error: No argument supplied for number of orderers."
-    exit 1
+    return 1
 fi
 
 NUM_ORDERERS=$1 # the number of orderers to create

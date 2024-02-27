@@ -7,7 +7,7 @@ set -eu
 # remove existing artifacts, or proceed on if the directories don't exist
 rm -r "${PWD}"/channel-artifacts || true
 rm -r "${PWD}"/crypto-config || true
-rm -r "${PWD}"/data || true
+#rm -r "${PWD}"/data || true
 
 # look for binaries in local dev environment /build/bin directory and then in local samples /bin directory
 export PATH="${PWD}"/../bin:"${PWD}"/bin:"$PATH"

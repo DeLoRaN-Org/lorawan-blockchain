@@ -35,23 +35,24 @@
 source ./source_peer.sh
 
 #./vivado_commands.sh
-screen -S "network" -d -m ./network_monitor.sh
+#screen -S "network" -d -m ./network_monitor.sh
+#screen -S "monitor" -d -m ./cpu_mem_usage.sh
 
-route add default gw $(ip addr show can0 | grep -w inet | awk '{print $2}' | awk -F '/' '{print $1}' | sed 's/\.[0-9]*$/\.1/')
-echo 'nameserver 10.100.11.53' >> /etc/resolv.conf
-echo 'nameserver 10.100.11.54' >> /etc/resolv.conf
-echo 'nameserver 10.100.11.55' >> /etc/resolv.conf
+#route add default gw $(ip addr show can0 | grep -w inet | awk '{print $2}' | awk -F '/' '{print $1}' | sed 's/\.[0-9]*$/\.1/')
+#echo 'nameserver 10.100.11.53' >> /etc/resolv.conf
+#echo 'nameserver 10.100.11.54' >> /etc/resolv.conf
+#echo 'nameserver 10.100.11.55' >> /etc/resolv.conf
 
 if [[ -z ${DEVICE} ]]; then #network controller
     # START PEER.
     ./1_start_peer.sh
-    sleep 1
+    sleep 3
     ./2_join_channel.sh
-    sleep 1
+    sleep 3
     source ./3_set_chaincode_id.sh
 
     if [[ -n ${ADMIN} ]]; then
-        sleep 1
+        sleep 3
         # Install Chaincode on all peer of the organization.
         for (( i=0; i < PEER_PER_ORG; i++)); do
             CORE_PEER_MSPCONFIGPATH="$ADMIN_PEER_MSPCONFIGPATH" ./4_install_chaincode_on_peer.sh $i

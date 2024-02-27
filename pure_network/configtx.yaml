@@ -39,18 +39,18 @@ Organizations:
       - orderer2.orderers.dlwan.phd:6051
       - orderer3.orderers.dlwan.phd:6052
       - orderer4.orderers.dlwan.phd:6053
-      - orderer5.orderers.dlwan.phd:6054
-      - orderer6.orderers.dlwan.phd:6055
-      - orderer7.orderers.dlwan.phd:6056
-      - orderer8.orderers.dlwan.phd:6057
-      - orderer9.orderers.dlwan.phd:6058
-      - orderer10.orderers.dlwan.phd:6059
-      - orderer11.orderers.dlwan.phd:6060
-      - orderer12.orderers.dlwan.phd:6061
-      - orderer13.orderers.dlwan.phd:6062
-      - orderer14.orderers.dlwan.phd:6063
-      - orderer15.orderers.dlwan.phd:6064
-      - orderer16.orderers.dlwan.phd:6065
+      #- orderer5.orderers.dlwan.phd:6054
+      #- orderer6.orderers.dlwan.phd:6055
+      #- orderer7.orderers.dlwan.phd:6056
+      #- orderer8.orderers.dlwan.phd:6057
+      #- orderer9.orderers.dlwan.phd:6058
+      #- orderer10.orderers.dlwan.phd:6059
+      #- orderer11.orderers.dlwan.phd:6060
+      #- orderer12.orderers.dlwan.phd:6061
+      #- orderer13.orderers.dlwan.phd:6062
+      #- orderer14.orderers.dlwan.phd:6063
+      #- orderer15.orderers.dlwan.phd:6064
+      #- orderer16.orderers.dlwan.phd:6065
   - &Org1
     Name: Org1MSP
     # ID to load the MSP definition as
@@ -79,60 +79,60 @@ Organizations:
       # encoded in the genesis block in the Application section context
       - Host: peer0.org1.dlwan.phd
         Port: 7051
-  - &Org2
-    Name: Org2MSP
-    # ID to load the MSP definition as
-    ID: Org2MSP
-    MSPDir: crypto-config/peerOrganizations/org2.dlwan.phd/msp
-    # Policies defines the set of policies at this level of the config tree
-    # For organization policies, their canonical path is usually
-    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
-    Policies:
-      Readers:
-        Type: Signature
-        Rule: "OR('Org2MSP.admin', 'Org2MSP.peer', 'Org2MSP.client')"
-      Writers:
-        Type: Signature
-        Rule: "OR('Org2MSP.admin', 'Org2MSP.peer')"
-      Admins:
-        Type: Signature
-        Rule: "OR('Org2MSP.admin')"
-      Endorsement:
-        Type: Signature
-        Rule: "OR('Org2MSP.peer')"
-    AnchorPeers:
-      # AnchorPeers defines the location of peers which can be used
-      # for cross org gossip communication.  Note, this value is only
-      # encoded in the genesis block in the Application section context
-      - Host: peer0.org2.dlwan.phd
-        Port: 7051
-  - &Org3
-    Name: Org3MSP
-    # ID to load the MSP definition as
-    ID: Org3MSP
-    MSPDir: crypto-config/peerOrganizations/org3.dlwan.phd/msp
-    # Policies defines the set of policies at this level of the config tree
-    # For organization policies, their canonical path is usually
-    #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
-    Policies:
-      Readers:
-        Type: Signature
-        Rule: "OR('Org3MSP.admin', 'Org3MSP.peer', 'Org3MSP.client')"
-      Writers:
-        Type: Signature
-        Rule: "OR('Org3MSP.admin', 'Org3MSP.peer')"
-      Admins:
-        Type: Signature
-        Rule: "OR('Org3MSP.admin')"
-      Endorsement:
-        Type: Signature
-        Rule: "OR('Org3MSP.peer')"
-    AnchorPeers:
-      # AnchorPeers defines the location of peers which can be used
-      # for cross org gossip communication.  Note, this value is only
-      # encoded in the genesis block in the Application section context
-      - Host: peer0.org3.dlwan.phd
-        Port: 7051
+  #- &Org2
+  #  Name: Org2MSP
+  #  # ID to load the MSP definition as
+  #  ID: Org2MSP
+  #  MSPDir: crypto-config/peerOrganizations/org2.dlwan.phd/msp
+  #  # Policies defines the set of policies at this level of the config tree
+  #  # For organization policies, their canonical path is usually
+  #  #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+  #  Policies:
+  #    Readers:
+  #      Type: Signature
+  #      Rule: "OR('Org2MSP.admin', 'Org2MSP.peer', 'Org2MSP.client')"
+  #    Writers:
+  #      Type: Signature
+  #      Rule: "OR('Org2MSP.admin', 'Org2MSP.peer')"
+  #    Admins:
+  #      Type: Signature
+  #      Rule: "OR('Org2MSP.admin')"
+  #    Endorsement:
+  #      Type: Signature
+  #      Rule: "OR('Org2MSP.peer')"
+  #  AnchorPeers:
+  #    # AnchorPeers defines the location of peers which can be used
+  #    # for cross org gossip communication.  Note, this value is only
+  #    # encoded in the genesis block in the Application section context
+  #    - Host: peer0.org2.dlwan.phd
+  #      Port: 7051
+  #- &Org3
+  #  Name: Org3MSP
+  #  # ID to load the MSP definition as
+  #  ID: Org3MSP
+  #  MSPDir: crypto-config/peerOrganizations/org3.dlwan.phd/msp
+  #  # Policies defines the set of policies at this level of the config tree
+  #  # For organization policies, their canonical path is usually
+  #  #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+  #  Policies:
+  #    Readers:
+  #      Type: Signature
+  #      Rule: "OR('Org3MSP.admin', 'Org3MSP.peer', 'Org3MSP.client')"
+  #    Writers:
+  #      Type: Signature
+  #      Rule: "OR('Org3MSP.admin', 'Org3MSP.peer')"
+  #    Admins:
+  #      Type: Signature
+  #      Rule: "OR('Org3MSP.admin')"
+  #    Endorsement:
+  #      Type: Signature
+  #      Rule: "OR('Org3MSP.peer')"
+  #  AnchorPeers:
+  #    # AnchorPeers defines the location of peers which can be used
+  #    # for cross org gossip communication.  Note, this value is only
+  #    # encoded in the genesis block in the Application section context
+  #    - Host: peer0.org3.dlwan.phd
+  #      Port: 7051
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -211,10 +211,12 @@ Application: &ApplicationDefaults
       Rule: "MAJORITY Admins"
     LifecycleEndorsement:
       Type: Signature
-      Rule: "OR('Org1MSP.peer','Org2MSP.peer')"
+      #Rule: "OR('Org1MSP.peer','Org2MSP.peer')"
+      Rule: "OR('Org1MSP.peer')"
     Endorsement:
       Type: Signature
-      Rule: "OR('Org1MSP.peer','Org2MSP.peer')"
+      #Rule: "OR('Org1MSP.peer','Org2MSP.peer')"
+      Rule: "OR('Org1MSP.peer')"
   Capabilities:
     <<: *ApplicationCapabilities
 ################################################################################
@@ -231,10 +233,10 @@ Orderer: &OrdererDefaults
   # Batch Size: Controls the number of messages batched into a block
   BatchSize:
     # Max Message Count: The maximum number of messages to permit in a batch
-    MaxMessageCount: 10
+    MaxMessageCount: 200
     # Absolute Max Bytes: The absolute maximum number of bytes allowed for
     # the serialized messages in a batch.
-    AbsoluteMaxBytes: 99 MB
+    AbsoluteMaxBytes: 40 MB
     # Preferred Max Bytes: The preferred maximum number of bytes allowed for
     # the serialized messages in a batch. A message larger than the preferred
     # max bytes will result in a batch larger than preferred max bytes.
@@ -326,54 +328,54 @@ Profiles:
             Port: 6053
             ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer4.orderers.dlwan.phd/tls/server.crt
             ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer4.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer5.orderers.dlwan.phd
-            Port: 6054
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer5.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer5.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer6.orderers.dlwan.phd
-            Port: 6055
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer6.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer6.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer7.orderers.dlwan.phd
-            Port: 6056
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer7.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer7.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer8.orderers.dlwan.phd
-            Port: 6057
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer8.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer8.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer9.orderers.dlwan.phd
-            Port: 6058
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer9.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer9.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer10.orderers.dlwan.phd
-            Port: 6059
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer10.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer10.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer11.orderers.dlwan.phd
-            Port: 6060
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer11.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer11.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer12.orderers.dlwan.phd
-            Port: 6061
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer12.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer12.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer13.orderers.dlwan.phd
-            Port: 6062
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer13.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer13.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer14.orderers.dlwan.phd
-            Port: 6063
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer14.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer14.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer15.orderers.dlwan.phd
-            Port: 6064
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer15.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer15.orderers.dlwan.phd/tls/server.crt
-          - Host: orderer16.orderers.dlwan.phd
-            Port: 6065
-            ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer16.orderers.dlwan.phd/tls/server.crt
-            ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer16.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer5.orderers.dlwan.phd
+          #  Port: 6054
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer5.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer5.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer6.orderers.dlwan.phd
+          #  Port: 6055
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer6.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer6.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer7.orderers.dlwan.phd
+          #  Port: 6056
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer7.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer7.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer8.orderers.dlwan.phd
+          #  Port: 6057
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer8.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer8.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer9.orderers.dlwan.phd
+          #  Port: 6058
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer9.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer9.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer10.orderers.dlwan.phd
+          #  Port: 6059
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer10.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer10.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer11.orderers.dlwan.phd
+          #  Port: 6060
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer11.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer11.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer12.orderers.dlwan.phd
+          #  Port: 6061
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer12.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer12.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer13.orderers.dlwan.phd
+          #  Port: 6062
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer13.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer13.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer14.orderers.dlwan.phd
+          #  Port: 6063
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer14.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer14.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer15.orderers.dlwan.phd
+          #  Port: 6064
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer15.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer15.orderers.dlwan.phd/tls/server.crt
+          #- Host: orderer16.orderers.dlwan.phd
+          #  Port: 6065
+          #  ClientTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer16.orderers.dlwan.phd/tls/server.crt
+          #  ServerTLSCert: crypto-config/ordererOrganizations/orderers.dlwan.phd/orderers/orderer16.orderers.dlwan.phd/tls/server.crt
         Options:
           TickInterval: 2500ms
           ElectionTick: 5
@@ -384,7 +386,7 @@ Profiles:
       <<: *ApplicationDefaults
       Organizations:
         - *Org1
-        - *Org2
-        - *Org3
+        #- *Org2
+        #- *Org3
       Capabilities:
         <<: *ApplicationCapabilities
