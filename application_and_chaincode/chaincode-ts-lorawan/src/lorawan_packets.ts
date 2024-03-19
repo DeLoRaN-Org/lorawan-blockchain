@@ -380,8 +380,8 @@ export class LoRaWANPackets extends Contract {
             
             //let {private_p, packet} = ChainLoRaWANPacketHelper.from(ans, owner, 7, date, [n_id]); //TODO owner è sbagliato, bisogna mettere il dev_id ma bisogna gestire il caso della join accept        
 
-            //counter_type = ans_pack.getDir() == 'up' ? LoRaWANCounterType.F_CNT_UP : LoRaWANCounterType.AF_CNT_DWN
-            //updated_session = this.IncreaseDevCounter(ctx, updated_session, counter_type, ans_pack.FCnt.readUInt16BE(0))
+            counter_type = ans_pack.getDir() == 'up' ? LoRaWANCounterType.F_CNT_UP : LoRaWANCounterType.AF_CNT_DWN
+            updated_session = this.IncreaseDevCounter(ctx, updated_session, counter_type, ans_pack.FCnt.readUInt16BE(0))
 
             //promises.push(
             //    ctx.stub.putState(packet.hash, Buffer.from(stringify(sortKeysRecursive(packet)))),
