@@ -18,7 +18,7 @@ header="$header,orderers"
 echo $header >> $ping_file_name
 
 while true; do
-    rx_tx=$(ip -s -j link show can0 | jq '[.[0].stats64.rx.bytes,.[0].stats64.rx.packets, .[0].stats64.tx.bytes,.[0].stats64.tx.packets] | @csv' | sed 's/"//g')
+    rx_tx=$(ip -s -j link show eth0 | jq '[.[0].stats64.rx.bytes,.[0].stats64.rx.packets, .[0].stats64.tx.bytes,.[0].stats64.tx.packets] | @csv' | sed 's/"//g')
     
     timestamp=$(date +%s%3N)
     echo "$timestamp,$rx_tx" >> "$network_file_name"
