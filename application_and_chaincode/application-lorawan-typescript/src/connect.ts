@@ -153,7 +153,22 @@ export enum ContractType {
 export class PeerContract {
     devicesContract: Contract
     packetsContract: Contract
+
+    constructor(devicesContract: Contract, packetsContract: Contract) {
+        this.devicesContract = devicesContract
+        this.packetsContract = packetsContract
+    }
+
+    public getContract(c: ContractType): Contract {
+        if(c == ContractType.DEVICES) {
+            return this.devicesContract
+        } else {
+            return this.packetsContract
+        }
+    }
 }
+
+
 
 export class OrgsContracts {
     org1: PeerContract[]
@@ -204,7 +219,7 @@ export class OrgsContracts {
 }
 
 
-async function getContracts(tlsCertPath: string, peerEndpoint: string, peerName: string, certPathUser: string, mspId: string, keyDirectoryUserPath: string, channelName: string, chaincodeName: string): Promise<PeerContract> {
+export async function getContracts(tlsCertPath: string, peerEndpoint: string, peerName: string, certPathUser: string, mspId: string, keyDirectoryUserPath: string, channelName: string, chaincodeName: string): Promise<PeerContract> {
     const clientOrg = await newGrpcConnection(
         tlsCertPath,
         peerEndpoint,
@@ -220,11 +235,10 @@ async function getContracts(tlsCertPath: string, peerEndpoint: string, peerName:
     // Build a network instance based on the channel where the smart contract is deployed
     const network = gatewayOrg.getNetwork(channelName);
 
+    let devicesContract = network.getContract(chaincodeName, 'LoRaWANDevices')
+    let packetsContract = network.getContract(chaincodeName, 'LoRaWANPackets')
     // Get the contract from the network.
-    return {
-        devicesContract: network.getContract(chaincodeName, 'LoRaWANDevices'),
-        packetsContract: network.getContract(chaincodeName, 'LoRaWANPackets')
-    }
+    return new PeerContract(devicesContract, packetsContract)
 }
 
 async function getNetwork(tlsCertPath: string, peerEndpoint: string, peerName: string, certPathUser: string, mspId: string, keyDirectoryUserPath: string, channelName: string, chaincodeName: string): Promise<Network> {

@@ -140,7 +140,7 @@ Then you need to `cd` into the **/root/distributed-network-controller/preloader*
       }
     },
     "network_controller": { /* Configuration for the network controller, unlike the device it can have all 3 configurations at the same time */
-      "n_id": "ns_test_1",
+      "nc_id": "ns_test_1",
       "tcp_config": {
         "tcp_dev_port": 9090,
         "tcp_nc_port": 9091  /* To contact other network controller, useless rn */

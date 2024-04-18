@@ -1,4 +1,4 @@
-import { Context } from 'fabric-contract-api';
+/*import { Context } from 'fabric-contract-api';
 import LoRaPacket from 'lora-packet'
 import LoraPacket from 'lora-packet/out/lib/LoraPacket';
 import sortKeysRecursive from 'sort-keys-recursive';
@@ -118,7 +118,7 @@ function IncreaseDevCounter(assetJSON: any, counter_t: LoRaWANCounterType, new_v
 }
 
 
-function HandleJoinRequest(join_req: LoraPacket, date: string, n_id: string) {
+function HandleJoinRequest(join_req: LoraPacket, date: string, nc_id: string) {
     let ja = Buffer.from('20300b0f7e6b460cac72b749d8af592bee', 'hex');
     let join_accept = LoRaPacket.fromWire(ja)
 
@@ -155,7 +155,8 @@ function HandleJoinRequest(join_req: LoraPacket, date: string, n_id: string) {
                 rj_count0: 0,
                 app_s_key: [...AppSKey],
                 af_cnt_dwn: 0,
-                owner: 'wda'
+                owner: 'wda',
+                nc_ids: [nc_id]
             }
         } else {
             let {AppSKey, NwkSKey} = LoRaPacket.generateSessionKeys10(
@@ -177,7 +178,8 @@ function HandleJoinRequest(join_req: LoraPacket, date: string, n_id: string) {
                 rj_count0: 0,
                 app_s_key: [...AppSKey],
                 af_cnt_dwn: 0,
-                owner: 'wda'
+                owner: 'wda',
+                nc_ids: [nc_id]
             }
         }
 
@@ -187,7 +189,7 @@ function HandleJoinRequest(join_req: LoraPacket, date: string, n_id: string) {
         
         updated_config.dev_addr = device_session.dev_addr
 
-        let {private_p, packet} = ChainLoRaWANPacketHelper.from(ja, device_session.owner, 7, date, [n_id]); //TODO owner è sbagliato, bisogna mettere il dev_addr ma bisogna gestire il caso della join accept
+        let {private_p, packet} = ChainLoRaWANPacketHelper.from(ja, device_session.owner, 7, date, [nc_id]); //TODO owner è sbagliato, bisogna mettere il dev_addr ma bisogna gestire il caso della join accept
     }
 }
 
@@ -232,7 +234,7 @@ async function CreatePacket(): Promise<void> {
 
     let b = Buffer.from('40177e3f6ba003000111b254f6d4dff961e526a634c213254c8a2cfb0102c5f664a6eb4c6f83d8a11b58444940177e3f6ba0040001acc5d7f2aeac989650642a63ff1cb9dec4c4aa638215884178a04ce7803c92811d8db9', 'hex');
     let date = Buffer.from('31363738313231333633303735', 'hex').toString('utf8');
-    let n_id = Buffer.from('31', 'hex').toString('utf8');
+    let nc_id = Buffer.from('31', 'hex').toString('utf8');
     let p: LoraPacket = LoRaPacket.fromWire(b)
 
     let session = {
@@ -247,12 +249,14 @@ async function CreatePacket(): Promise<void> {
 	    "nwk_s_enc_key":[219,225,237,201,92,251,193,91,164,140,194,132,117,34,204,170],
 	    "owner":"Org1MSP",
 	    "rj_count0":0,
-	    "snwk_s_int_key":[219,225,237,201,92,251,193,91,164,140,194,132,117,34,204,170]
+	    "snwk_s_int_key":[219,225,237,201,92,251,193,91,164,140,194,132,117,34,204,170],
+        "nc_ids": ["1", "2", "3", "4"]
+
     }
 
     if(p.isJoinRequestMessage() || p.isReJoinRequestMessage()) {
         //await checkJoinRejoinPacket(p)
-        //await HandleJoinRequest(p, b, date, n_id)
+        //await HandleJoinRequest(p, b, date, nc_id)
     } else if(p.isDataMessage()) {
         await checkDataPacket(session, p)
     } else {
@@ -261,4 +265,19 @@ async function CreatePacket(): Promise<void> {
     console.log('*** Result: committed')
 }
 
-CreatePacket()
+//CreatePacket()
+*/
+
+const x509Certificate = "x509::/C=US/ST=California/L=San Francisco/OU=peer/CN=peer2.org1.dlwan.phd::/C=US/ST=California/L=San Francisco/O=org1.dlwan.phd/CN=ca.org1.dlwan.phd";
+
+function extractCN(x509String: string): string | null {
+    const cnRegex = /CN=([^\/]+)::/; // Regex to match CN followed by any characters except '/'
+    const match = x509String.match(cnRegex);
+    if (match && match[1]) {
+        return match[1]; // Return the matched CN value directly
+    }
+    return null;
+}
+
+const commonName = extractCN(x509Certificate);
+console.log(commonName); // Output: "peer2.org1.dlwan.phd"

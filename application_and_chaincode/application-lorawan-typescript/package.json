@@ -11,6 +11,7 @@
     "scripts": {
         "lint": "tslint -c tslint.json 'src/**/*.ts'",
         "pretest": "npm run lint",
+        "run_server": "node dist/app.js",
         "start": "npm run build && node dist/app.js",
         "enroll": "npm run build && node dist/enroll.js",
         "build": "tsc",
@@ -28,6 +29,7 @@
     },
     "devDependencies": {
         "@types/express": "^4.17.16",
+        "@types/google-protobuf": "^3.15.12",
         "@types/node": "*",
         "tslint": "^5.11.0",
         "typescript": "^3.1.6"

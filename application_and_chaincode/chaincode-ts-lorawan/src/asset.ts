@@ -4,6 +4,7 @@
 
 import {Object as ObjDecorator, Property} from 'fabric-contract-api';
 import crypto from 'crypto'
+import LoraPacket from 'lora-packet/out/lib/LoraPacket';
 
 export enum Region {
     EU863_870 = "EU863_870",
@@ -163,6 +164,7 @@ export class DeviceHelper {
 
     }
     
+    /*
     static to_conf_session(d: Device): {sess?: DeviceSession, conf: DeviceConfiguration} {
         let s: DeviceSession | undefined = undefined;
         
@@ -208,7 +210,7 @@ export class DeviceHelper {
             sess: s,
             conf: c
         }
-    }
+    }*/
     
     static from_str(s: string): Device {
         let device: Device = this.default()
@@ -334,6 +336,8 @@ export class DeviceSession {
     @Property()
     public af_cnt_dwn: number
     
+    @Property("nc_ids", "Array<string>")
+    public nc_ids: string[]
     @Property()
     public owner: string
 }
@@ -382,4 +386,16 @@ export class ChainLoRaWANPacket {
     public sf: number
     @Property("gws", "Array<string>")             
     public gws: string[]
+}
+
+@ObjDecorator()
+export class JoinReqProposal {
+    @Property("join_req", "Array<number>")
+    join_req: number[]
+    @Property("join_accept", "Array<number>")
+    join_accept: number[]
+    @Property()
+    date: number
+    @Property()
+    nc_id: string
 }

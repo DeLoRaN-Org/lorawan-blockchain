@@ -98,6 +98,7 @@ uploadToPeer() {
             rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/src/sdr-lora-merged.py -e                     ssh $PEER_ADDR:/opt/network-controller/config/lora.py
             #rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/target/release/preloader              -e      ssh $PEER_ADDR:/opt/network-controller/bin/
             rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../application_and_chaincode/chaincode-ts-lorawan/ -e      ssh $PEER_ADDR:/root/chaincode
+            rsync -q -u --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../application_and_chaincode/application-lorawan-typescript/ -e      ssh $PEER_ADDR:/root/server_chaincode
         fi
 
         if [[ "--admin" == "${var}" ]]; then
