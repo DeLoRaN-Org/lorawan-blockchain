@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { DeviceConfiguration, DeviceSession } from './asset';
-import * as express from 'express';
 
 import {
     ContractType,
@@ -20,12 +19,12 @@ import { ProposalOptions } from '@hyperledger/fabric-gateway';
 const channelName = 'lorawan';
 const chaincodeName = 'lorawan';
 
-const app = express()
+//const app = express()
 const port = Number(process.env.PORT) || 9999;
 let contracts: PeerContract = null;
 
 
-app.use(express.json())
+//app.use(express.json())
 
 let colors = {
     RESET: '\x1B[0m',
