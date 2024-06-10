@@ -79,6 +79,8 @@ export class LoRaWANDevices extends Contract {
     public async CreateDeviceConfig(ctx: Context, device_config: string): BlockchainAns<void> {
         console.log('Invoked CreateDeviceConfig')
         let dev: DeviceConfiguration = JSON.parse(device_config)
+        let id = ctx.clientIdentity.getMSPID()
+
         dev.owner = ctx.clientIdentity.getMSPID()
         let dev_id: string = Buffer.from(dev.dev_eui).toString('hex')
         const exists = (await this.configExists(ctx, dev_id)).content;

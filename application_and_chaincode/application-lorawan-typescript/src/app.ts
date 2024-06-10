@@ -76,13 +76,13 @@ async function send_transaction(contract: ContractType, function_name: string, i
     if (transientData) options.transientData = transientData
     if (args) options.arguments = args
 
-    //console.log(colors.GREEN, contract, function_name, invoke, options, colors.RESET)
     
     if (invoke) {
         ans = utf8Decoder.decode(await c.submit(function_name, options))
     } else {
         ans = utf8Decoder.decode(await c.evaluate(function_name, options))
     }
+    //console.log(colors.RED, ans, colors.RESET)
     return ans
 }
 
@@ -100,33 +100,54 @@ async function send_transaction(contract: ContractType, function_name: string, i
 //}
 
 
-async function join_procedure(join_request: Buffer, join_accept: Buffer, nc_id: string, dev_eui: string): Promise<boolean> {
+async function join_procedure(join_request: Buffer, join_accept: Buffer, nc_id: string, dev_eui: string): Promise<{
+    winner: string,
+    keys: string[]
+}> {
     let transientData: any = {
         join_request: [...join_request],
         join_accept: [...join_accept],
         date: `${new Date().getTime()}`
     }
     
+    let time = Date.now()
     await send_transaction(ContractType.PACKETS, 'JoinRequestPreDeduplication', true, transientData)
+    let after = Date.now()
+    let elapsed = after - time
+    //console.log(colors.RED + 'Elapsed time: ' + elapsed + colors.RESET)
+
+    let convergence_time_after_transaction = (3500 - elapsed)
+    if(convergence_time_after_transaction > 0) await new Promise(resolve => setTimeout(resolve, convergence_time_after_transaction))
     
     //async sleep function
-    await new Promise(resolve => setTimeout(resolve, 500));
-
+    //time = Date.now()
+    //elapsed = Date.now() - time
+    //console.log(colors.YELLOW + 'Elapsed time: ' + elapsed + colors.RESET)
+    
     transientData = { dev_eui }
     let ans = JSON.parse(await send_transaction(ContractType.PACKETS, 'JoinRequestDeduplication', false, transientData))
+    return ans.content
+    //if(ans.content.winner != nc_id) {
+    //    //console.log(colors.RED + 'Join Request already processed' + colors.RESET)
+    //    return false
+    //} 
 
-    if(ans.content.winner != nc_id) {
-        //console.log(colors.RED + 'Join Request already processed' + colors.RESET)
-        return false
-    } 
+    //transientData = { 
+    //    keys: JSON.stringify(ans.content.keys),
+    //    dev_eui
+    //}
 
-    transientData = { 
-        keys: JSON.stringify(ans.content.keys),
+    //await send_transaction(ContractType.PACKETS, 'JoinRequestSessionGeneration', true, transientData)
+    //return true
+}
+
+async function session_generation(dev_eui: string, keys: string[]): Promise<void> {
+    let transientData: any = { 
+        keys: JSON.stringify(keys), 
         dev_eui
     }
-
     await send_transaction(ContractType.PACKETS, 'JoinRequestSessionGeneration', true, transientData)
-    return true
+    return
 }
 
 
@@ -136,6 +157,11 @@ async function create_uplink(packet: Buffer, date: string, answer?: Buffer): Pro
         transientData.answer = answer;
     }
     await send_transaction(ContractType.PACKETS, 'CreatePacket', true, transientData)
+    return 
+}
+
+async function create_device_config(device: DeviceConfiguration): Promise<void>  {
+    await send_transaction(ContractType.DEVICES, 'CreateDeviceConfig', true, undefined, [JSON.stringify(device)])
     return 
 }
 
@@ -178,8 +204,18 @@ async function main() {
                     ans_to_send = { ok: true, content: ans }
                     break
                 }
+                case 'session_generation': {
+                    await session_generation(body.dev_eui, body.keys)
+                    ans_to_send = { ok: true }
+                    break
+                }
                 case 'create_uplink': {
                     await create_uplink(Buffer.from(body.packet), body.date, body.answer ? Buffer.from(body.answer) : undefined)
+                    ans_to_send = { ok: true }
+                    break
+                }
+                case 'create_device_config': {
+                    await create_device_config(body.device)
                     ans_to_send = { ok: true }
                     break
                 }
@@ -195,18 +231,14 @@ async function main() {
                 }
             }
         } catch (e) {
-            console.log(colors.RED + 'Error in join procedure' + colors.RESET)
+            console.log(colors.RED + `Error in ${body.type}` + colors.RESET)
             console.log(e)
-            ans_to_send = { ok: false }
+            ans_to_send = { ok: false, error_message: e.message }
         }
 
-        //console.log(colors.BLUE + 'Sending answer: ' + JSON.stringify(ans_to_send) + colors.RESET)
+        //console.log(colors.BLUE + 'Sending answer to' + rinfo.address + rinfo.port + ': ' + JSON.stringify(ans_to_send) + colors.RESET)
         server.send(JSON.stringify(ans_to_send), rinfo.port, rinfo.address)
     });
-    
-    
-    
-    
     
     server.on('error', (err) => {
         console.error(`server error:\n${err.stack}`);

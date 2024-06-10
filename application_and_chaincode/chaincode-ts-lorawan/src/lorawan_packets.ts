@@ -68,7 +68,7 @@ export class LoRaWANPackets extends Contract {
 
         let fcntMSBytes = Buffer.alloc(4)
         fcntMSBytes.writeUInt32BE(counter, 0)
-        fcntMSBytes = fcntMSBytes.slice(0,2)
+        fcntMSBytes = fcntMSBytes.subarray(0,2)
 
         //let expected_mic = LoRaPacket.calculateMIC(p, Buffer.from(deviceSession.nwk_s_enc_key), Buffer.from(deviceSession.app_s_key), fcntMSBytes)
         let mic_valid = LoRaPacket.verifyMIC(p, Buffer.from(deviceSession.nwk_s_enc_key), Buffer.from(deviceSession.app_s_key), fcntMSBytes)
@@ -263,6 +263,17 @@ export class LoRaWANPackets extends Contract {
         await ctx.stub.putPrivateData(packetCollectionName, composite_key, Buffer.from(stringify(sortKeysRecursive(stored_communication, {ignoreArrayAtKeys: ignoredKeys }))))
         return {}
     }
+
+
+    private async sort_and_filter_join_reqs(join_reqs_list: JoinReqProposal[], earliest: number): Promise<JoinReqProposal[]> {
+        return join_reqs_list.filter(v => v.date - earliest < 200).sort((a,b) => a.nc_id.localeCompare(b.nc_id))
+    }
+
+    private select_winner(join_reqs_list: JoinReqProposal[]): JoinReqProposal {
+        let index = Buffer.from(join_reqs_list[0].join_req.slice(-4)).readUInt32LE()
+        index = index % join_reqs_list.length
+        return join_reqs_list[index]
+    }
     
     private async proposalsIteratorToArray(iterator_h: Iterators.StateQueryIterator): Promise<([JoinReqProposal[], string[]])> {
         type IteratorMask = {  //to solve a bug in the types, the iterator is not really an Iterator but a structure containing an iterator
@@ -272,11 +283,8 @@ export class LoRaWANPackets extends Contract {
         let iterator = iterator_m.iterator
 
 
-        let iterator_value = await iterator.next()
-        //console.log(iterator_value)
-        
+        let iterator_value = await iterator.next()        
         let join_reqs_list: JoinReqProposal[] = []
-        let now = new Date().getTime()
         let earliest: number = null
         let keys = []
 
@@ -287,7 +295,7 @@ export class LoRaWANPackets extends Contract {
             keys.push(key)
             
             let tmst = parsed_value.date 
-            if(!earliest || (tmst < earliest && (now - parsed_value.date < 5000))){
+            if(!earliest || (tmst < earliest)){
                 earliest = tmst
             }
 
@@ -296,13 +304,16 @@ export class LoRaWANPackets extends Contract {
             join_reqs_list.push(parsed_value)
             iterator_value = await iterator.next()
             //console.log(iterator_value)
+            //console.log("Iterator done:", iterator_value.done);
+            //console.log("Iterator value:", iterator_value.value);
         }
-
+        console.log(`Earliest: ${earliest}, keys: ${keys}`);
         if(join_reqs_list.length == 0) {
             throw new Error(`No join requests found for device`)
         }
 
-        join_reqs_list = join_reqs_list.filter(v => v.date - earliest < 200).sort((a,b) => a.date - b.date)
+        join_reqs_list = await this.sort_and_filter_join_reqs(join_reqs_list, earliest)
+        //join_reqs_list.filter(v => v.date - earliest < 200).sort((a,b) => a.nc_id.localeCompare(b.nc_id))
         
         if(join_reqs_list.length == 0) {
             throw new Error(`No valid join requests found for device after filter phase`)
@@ -310,6 +321,40 @@ export class LoRaWANPackets extends Contract {
 
         await iterator.close()
         return [join_reqs_list, keys]
+    }
+
+
+    @Transaction(false)
+    async JoinRequestDeduplication(ctx: Context): BlockchainAns<{
+        winner: string,
+        keys: string[]
+    }> {
+        //console.log(`MSPID: ${ctx.clientIdentity.getMSPID()}`)
+        //console.log(`ID: ${ctx.clientIdentity.getID()}`)
+        this.verifyClientOrgMatchesPeerOrg(ctx)
+
+        let tx_map = ctx.stub.getTransient()
+        if(!tx_map.has("dev_eui")) {
+            throw new Error("Missing fields to perform deduplication")
+        }
+
+        let dev_eui = Buffer.from(tx_map.get('dev_eui')).toString('utf8');
+        
+        let packetCollectionName = `${this.packetCollectionBaseName}_${ctx.clientIdentity.getMSPID()}`
+        
+        console.log(`Looking for join requests from DevEUI: ${dev_eui}`)
+        let iterator = await ctx.stub.getPrivateDataByPartialCompositeKey(packetCollectionName, "join_req", [dev_eui])
+        let [join_reqs_list, keys] = await this.proposalsIteratorToArray(iterator)
+
+        let winner = this.select_winner(join_reqs_list)
+
+        console.log(`Winner: ${winner.nc_id}, list: ${join_reqs_list.map(v => v.nc_id)}`)
+        return {
+            content: {
+                winner: winner.nc_id,
+                keys
+            }
+        }
     }
 
     private async generateAndStoreDeviceSession(ctx: Context, config: DeviceConfiguration, join_req: LoraPacket, join_accept: LoraPacket, nc_ids: string[]) {
@@ -325,6 +370,8 @@ export class LoRaWANPackets extends Contract {
                 decrypted_join_accept.AppNonce,
                 join_req.DevNonce
             ) 
+
+            console.log(`new DevAddr is: ${decrypted_join_accept.DevAddr}, ${[...decrypted_join_accept.DevAddr]}`)
 
             device_session = {
                 fnwk_s_int_key: [...FNwkSIntKey],
@@ -349,6 +396,8 @@ export class LoRaWANPackets extends Contract {
                 join_req.DevNonce
             )
 
+            console.log(`new DevAddr is: ${decrypted_join_accept.DevAddr}, ${[...decrypted_join_accept.DevAddr]}`)
+
             device_session = {
                 fnwk_s_int_key: [...NwkSKey],
                 snwk_s_int_key: [...NwkSKey],
@@ -366,7 +415,7 @@ export class LoRaWANPackets extends Contract {
             }
         }
 
-        let dev_addr: string = Buffer.from(device_session.dev_addr).toString('hex') //TODO CHECK PRIMA DELLA GENERAZIONE DELLE SESSIONI
+        let dev_addr: string = decrypted_join_accept.DevAddr.toString('hex') //TODO CHECK PRIMA DELLA GENERAZIONE DELLE SESSIONI
         const exists = await this.sessionExists(ctx, dev_addr);
         if (exists) {
             throw new Error(`The device session for ${dev_addr} already exists`);
@@ -390,35 +439,6 @@ export class LoRaWANPackets extends Contract {
             //ctx.stub.putPrivateData(packetCollectionName, join_accept_s.private_p.hash, Buffer.from(stringify(sortKeysRecursive(join_accept_s.private_p)))),
             //ctx.stub.putPrivateData(packetCollectionName, join_req_s.private_p.hash, Buffer.from(stringify(sortKeysRecursive(join_req_s.private_p))))
         ])
-    }
-
-    @Transaction(false)
-    async JoinRequestDeduplication(ctx: Context): BlockchainAns<{
-        winner: string,
-        keys: string[]
-    }> {
-        //console.log(`MSPID: ${ctx.clientIdentity.getMSPID()}`)
-        //console.log(`ID: ${ctx.clientIdentity.getID()}`)
-        this.verifyClientOrgMatchesPeerOrg(ctx)
-
-        let tx_map = ctx.stub.getTransient()
-        if(!tx_map.has("dev_eui")) {
-            throw new Error("Missing fields to perform deduplication")
-        }
-
-        let dev_eui = Buffer.from(tx_map.get('dev_eui')).toString('utf8');
-        
-        let packetCollectionName = `${this.packetCollectionBaseName}_${ctx.clientIdentity.getMSPID()}`
-        
-        let iterator = await ctx.stub.getPrivateDataByPartialCompositeKey(packetCollectionName, "join_req", [dev_eui])
-        let [join_reqs_list, keys] = await this.proposalsIteratorToArray(iterator)
-
-        return {
-            content: {
-                winner: join_reqs_list[0].nc_id,
-                keys
-            }
-        }
     }
 
     @Transaction()
@@ -450,13 +470,13 @@ export class LoRaWANPackets extends Contract {
             //promises.push(ctx.stub.deletePrivateData(packetCollectionName, k))
         }
 
-        let now = new Date().getTime()
-        let proposals: JoinReqProposal[] = (await Promise.all(promises)).map(v => JSON.parse(v.toString())).filter(v => v.date - now < 5000).sort((a,b) => a.date - b.date)
-
-        let winner = proposals[0]
+        let proposals: JoinReqProposal[] = (await Promise.all(promises)).map(v => JSON.parse(v.toString()))
+        let earliest = proposals.map(v => v.date).reduce((a,b) => a < b ? a : b)
+        proposals = await this.sort_and_filter_join_reqs(proposals, earliest)
+        let winner = this.select_winner(proposals)
 
         if(winner.nc_id != nc_id) {
-            console.error(`Winner: ${winner.nc_id}, nc_id: ${nc_id}, msp_id: ${msp_id}`)
+            console.error(`Winner: ${winner.nc_id}, nc_id: ${nc_id}, msp_id: ${msp_id}, proposals: ${JSON.stringify(proposals)}`) 
             throw new Error(`The winner proposal is not valid for the current client`)
         }
 
