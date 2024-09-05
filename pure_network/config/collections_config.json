@@ -4,7 +4,7 @@
         "policy": "OR('Org1MSP.member')",
         "requiredPeerCount": 3,
         "maxPeerCount": 3,
-        "blockToLive": 1000,
+        "blockToLive": 0,
         "memberOnlyRead": true,
         "memberOnlyWrite": true,
         "endorsementPolicy": {
@@ -16,7 +16,7 @@
         "policy": "OR('Org1MSP.member')",
         "requiredPeerCount": 3,
         "maxPeerCount": 3,
-        "blockToLive": 1000,
+        "blockToLive": 0,
         "memberOnlyRead": true,
         "memberOnlyWrite": true,
         "endorsementPolicy": {

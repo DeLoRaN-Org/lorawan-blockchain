@@ -184,7 +184,9 @@ export class LoRaWANDevices extends Contract {
             throw new Error(`The device session for ${dev_addr} does not exist`);
         }
         let session: DeviceSession = JSON.parse(assetJSON.toString());
-        if (!this.verifyClientOrgMatchesOwnerOrg(ctx, session)) return
+        if (!this.verifyClientOrgMatchesOwnerOrg(ctx, session)) {
+            throw new Error(`The device ${dev_addr} does not belong to the client's org`);
+        }
 
         return {
             content: stringify(sortKeysRecursive(session, {ignoreArrayAtKeys: ignoredKeys}))

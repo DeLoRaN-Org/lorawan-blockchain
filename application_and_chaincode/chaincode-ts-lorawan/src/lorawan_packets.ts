@@ -265,13 +265,14 @@ export class LoRaWANPackets extends Contract {
     }
 
 
-    private async sort_and_filter_join_reqs(join_reqs_list: JoinReqProposal[], earliest: number): Promise<JoinReqProposal[]> {
-        return join_reqs_list.filter(v => v.date - earliest < 200).sort((a,b) => a.nc_id.localeCompare(b.nc_id))
+    private sort_and_filter_join_reqs(join_reqs_list: JoinReqProposal[], earliest: number): JoinReqProposal[] {
+        return join_reqs_list.filter(v => v.date - earliest < 2000).sort((a,b) => a.nc_id.localeCompare(b.nc_id))
     }
 
     private select_winner(join_reqs_list: JoinReqProposal[]): JoinReqProposal {
         let index = Buffer.from(join_reqs_list[0].join_req.slice(-4)).readUInt32LE()
         index = index % join_reqs_list.length
+        console.error(`Buffer: ${ Buffer.from(join_reqs_list[0].join_req.slice(-4)).toString('hex') }, Index: ${index}, list: ${join_reqs_list.map(v => v.nc_id)}`)
         return join_reqs_list[index]
     }
     
@@ -312,7 +313,7 @@ export class LoRaWANPackets extends Contract {
             throw new Error(`No join requests found for device`)
         }
 
-        join_reqs_list = await this.sort_and_filter_join_reqs(join_reqs_list, earliest)
+        join_reqs_list = this.sort_and_filter_join_reqs(join_reqs_list, earliest)
         //join_reqs_list.filter(v => v.date - earliest < 200).sort((a,b) => a.nc_id.localeCompare(b.nc_id))
         
         if(join_reqs_list.length == 0) {
@@ -446,9 +447,8 @@ export class LoRaWANPackets extends Contract {
         let msp_id = ctx.clientIdentity.getMSPID()
         let nc_id = this.extractCN(ctx)
         
-        //console.log(`MSPID: ${msp_id}`)
-        //console.log(`ID: ${nc_id}`)
-
+        console.log(`MSPID: ${msp_id}, NC: ${nc_id}, TxID: ${ctx.stub.getTxID()}`)
+        
         if (!nc_id) {
             throw new Error("CN not found in client certificate")
         }
@@ -470,9 +470,16 @@ export class LoRaWANPackets extends Contract {
             //promises.push(ctx.stub.deletePrivateData(packetCollectionName, k))
         }
 
-        let proposals: JoinReqProposal[] = (await Promise.all(promises)).map(v => JSON.parse(v.toString()))
+        let proposals: JoinReqProposal[] = (await Promise.all(promises)).map(v => {
+            try {
+                return JSON.parse(v.toString())
+            } catch(e) {
+                throw new Error(`Error parsing proposals ${v}: ${e}`)
+            }
+        })
+
         let earliest = proposals.map(v => v.date).reduce((a,b) => a < b ? a : b)
-        proposals = await this.sort_and_filter_join_reqs(proposals, earliest)
+        proposals = this.sort_and_filter_join_reqs(proposals, earliest)
         let winner = this.select_winner(proposals)
 
         if(winner.nc_id != nc_id) {
@@ -611,10 +618,17 @@ export class LoRaWANPackets extends Contract {
         this.verifyClientOrgMatchesPeerOrg(ctx)
         
         let sess = (await ctx.stub.getPrivateData(sessionCollectionName, stringAddr)).toString()
+        if(!sess || sess.length === 0) {
+            throw new Error("No session for DevAddr ${stringAddr} found, found ${sess}")
+        }
         let device_session: DeviceSession = JSON.parse(sess)
 
         this.checkDataPacket(ctx, device_session, pack)
         
+        if (!pack.getDir()) {
+            throw new Error(`Invalid packet direction -- mhdr: ${pack.MHDR.toString('hex')}`)
+        }
+
         let counter_type: LoRaWANCounterType = pack.getDir() == 'up' ? LoRaWANCounterType.F_CNT_UP : LoRaWANCounterType.AF_CNT_DWN
         let updated_session = this.IncreaseDevCounter(ctx, device_session, counter_type, pack.FCnt.readUInt16BE(0))
         
@@ -629,7 +643,6 @@ export class LoRaWANPackets extends Contract {
             let ans = Buffer.from(tx_map.get('answer'));
             let ans_pack = LoRaPacket.fromWire(ans)
             this.checkDataPacket(ctx, device_session, ans_pack)
-            
             
             counter_type = ans_pack.getDir() == 'up' ? LoRaWANCounterType.F_CNT_UP : LoRaWANCounterType.AF_CNT_DWN
             updated_session = this.IncreaseDevCounter(ctx, updated_session, counter_type, ans_pack.FCnt.readUInt16BE(0))
