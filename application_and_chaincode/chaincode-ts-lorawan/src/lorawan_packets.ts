@@ -39,7 +39,7 @@ export class LoRaWANPackets extends Contract {
         //console.log(`clientMSPID: ${clientMSPID}, peerMSPID: ${peerMSPID}`);
         
         if (peerMSPID !== clientMSPID) {
-            console.error(`Client from org ${clientMSPID} is not authorized to read or write private data from an org ${peerMSPID} peer`);
+            //console.error(`Client from org ${clientMSPID} is not authorized to read or write private data from an org ${peerMSPID} peer`);
             throw Error(`Client from org ${clientMSPID} is not authorized to read or write private data from an org ${peerMSPID} peer`);
         }
     }
@@ -48,7 +48,7 @@ export class LoRaWANPackets extends Contract {
         //console.log(dc)
         //console.log(`clientMSPID: ${ctx.clientIdentity.getMSPID()}, owner: ${dc.owner}, peerMSPID ${ctx.stub.getMspID()}`);
         if (ctx.clientIdentity.getMSPID() !== dc.owner) {
-            console.error(`Client from org ${ctx.clientIdentity.getMSPID()} is not authorized to read or write private data of ${dc.owner}`);
+            //console.error(`Client from org ${ctx.clientIdentity.getMSPID()} is not authorized to read or write private data of ${dc.owner}`);
             throw Error(`Client from org ${ctx.clientIdentity.getMSPID()} is not authorized to read or write private data of ${dc.owner}`);
         }
         return true
@@ -173,6 +173,7 @@ export class LoRaWANPackets extends Contract {
         
         const target = mapping.config ? deviceConfig : deviceSession;
         const old_value = target[mapping.property];
+        //console.error(`Old value: ${old_value}, new value: ${new_value}, mapping: ${mapping}, target: ${target}`)
         if (old_value >= new_value) {
             throw new Error(`Value ${new_value} invalid, expected > ${old_value} for device ${dev_id}.${counter_t}`);
         }
@@ -272,7 +273,7 @@ export class LoRaWANPackets extends Contract {
     private select_winner(join_reqs_list: JoinReqProposal[]): JoinReqProposal {
         let index = Buffer.from(join_reqs_list[0].join_req.slice(-4)).readUInt32LE()
         index = index % join_reqs_list.length
-        console.error(`Buffer: ${ Buffer.from(join_reqs_list[0].join_req.slice(-4)).toString('hex') }, Index: ${index}, list: ${join_reqs_list.map(v => v.nc_id)}`)
+        //console.error(`Buffer: ${ Buffer.from(join_reqs_list[0].join_req.slice(-4)).toString('hex') }, Index: ${index}, list: ${join_reqs_list.map(v => v.nc_id)}`)
         return join_reqs_list[index]
     }
     
@@ -308,7 +309,7 @@ export class LoRaWANPackets extends Contract {
             //console.log("Iterator done:", iterator_value.done);
             //console.log("Iterator value:", iterator_value.value);
         }
-        console.log(`Earliest: ${earliest}, keys: ${keys}`);
+        //console.log(`Earliest: ${earliest}, keys: ${keys}`);
         if(join_reqs_list.length == 0) {
             throw new Error(`No join requests found for device`)
         }
@@ -323,7 +324,6 @@ export class LoRaWANPackets extends Contract {
         await iterator.close()
         return [join_reqs_list, keys]
     }
-
 
     @Transaction(false)
     async JoinRequestDeduplication(ctx: Context): BlockchainAns<{
@@ -343,13 +343,13 @@ export class LoRaWANPackets extends Contract {
         
         let packetCollectionName = `${this.packetCollectionBaseName}_${ctx.clientIdentity.getMSPID()}`
         
-        console.log(`Looking for join requests from DevEUI: ${dev_eui}`)
+        //console.log(`Looking for join requests from DevEUI: ${dev_eui}`)
         let iterator = await ctx.stub.getPrivateDataByPartialCompositeKey(packetCollectionName, "join_req", [dev_eui])
         let [join_reqs_list, keys] = await this.proposalsIteratorToArray(iterator)
 
         let winner = this.select_winner(join_reqs_list)
 
-        console.log(`Winner: ${winner.nc_id}, list: ${join_reqs_list.map(v => v.nc_id)}`)
+        //console.log(`Winner: ${winner.nc_id}, list: ${join_reqs_list.map(v => v.nc_id)}`)
         return {
             content: {
                 winner: winner.nc_id,
@@ -372,7 +372,7 @@ export class LoRaWANPackets extends Contract {
                 join_req.DevNonce
             ) 
 
-            console.log(`new DevAddr is: ${decrypted_join_accept.DevAddr}, ${[...decrypted_join_accept.DevAddr]}`)
+            //console.log(`new DevAddr is: ${decrypted_join_accept.DevAddr}, ${[...decrypted_join_accept.DevAddr]}`)
 
             device_session = {
                 fnwk_s_int_key: [...FNwkSIntKey],
@@ -397,7 +397,7 @@ export class LoRaWANPackets extends Contract {
                 join_req.DevNonce
             )
 
-            console.log(`new DevAddr is: ${decrypted_join_accept.DevAddr}, ${[...decrypted_join_accept.DevAddr]}`)
+            //console.log(`new DevAddr is: ${decrypted_join_accept.DevAddr}, ${[...decrypted_join_accept.DevAddr]}`)
 
             device_session = {
                 fnwk_s_int_key: [...NwkSKey],
@@ -447,7 +447,7 @@ export class LoRaWANPackets extends Contract {
         let msp_id = ctx.clientIdentity.getMSPID()
         let nc_id = this.extractCN(ctx)
         
-        console.log(`MSPID: ${msp_id}, NC: ${nc_id}, TxID: ${ctx.stub.getTxID()}`)
+        //console.log(`MSPID: ${msp_id}, NC: ${nc_id}, TxID: ${ctx.stub.getTxID()}`)
         
         if (!nc_id) {
             throw new Error("CN not found in client certificate")
@@ -483,7 +483,7 @@ export class LoRaWANPackets extends Contract {
         let winner = this.select_winner(proposals)
 
         if(winner.nc_id != nc_id) {
-            console.error(`Winner: ${winner.nc_id}, nc_id: ${nc_id}, msp_id: ${msp_id}, proposals: ${JSON.stringify(proposals)}`) 
+            //console.error(`Winner: ${winner.nc_id}, nc_id: ${nc_id}, msp_id: ${msp_id}, proposals: ${JSON.stringify(proposals)}`) 
             throw new Error(`The winner proposal is not valid for the current client`)
         }
 
@@ -629,11 +629,14 @@ export class LoRaWANPackets extends Contract {
             throw new Error(`Invalid packet direction -- mhdr: ${pack.MHDR.toString('hex')}`)
         }
 
-        let counter_type: LoRaWANCounterType = pack.getDir() == 'up' ? LoRaWANCounterType.F_CNT_UP : LoRaWANCounterType.AF_CNT_DWN
-        let updated_session = this.IncreaseDevCounter(ctx, device_session, counter_type, pack.FCnt.readUInt16BE(0))
+        let fport = pack.FPort.readUInt8(0)
+        let fcount = pack.FCnt.readUInt16BE(0)
+        let counter_type = pack.getDir() == 'up' ? LoRaWANCounterType.F_CNT_UP : (!fport || fport == 0 ? LoRaWANCounterType.NF_CNT_DWN : LoRaWANCounterType.AF_CNT_DWN)
+        //console.error(`Pack FCnt: ${fcount}, counter: ${counter_type}, session: ${device_session.f_cnt_up}, ${device_session.af_cnt_dwn}`)
+        let updated_session = this.IncreaseDevCounter(ctx, device_session, counter_type, fcount)
         
         let promises = []
-
+        
         if (pack.isConfirmed()) {
             let tx_map = ctx.stub.getTransient()
             if(!tx_map.has("answer")) {
@@ -643,9 +646,13 @@ export class LoRaWANPackets extends Contract {
             let ans = Buffer.from(tx_map.get('answer'));
             let ans_pack = LoRaPacket.fromWire(ans)
             this.checkDataPacket(ctx, device_session, ans_pack)
-            
-            counter_type = ans_pack.getDir() == 'up' ? LoRaWANCounterType.F_CNT_UP : LoRaWANCounterType.AF_CNT_DWN
-            updated_session = this.IncreaseDevCounter(ctx, updated_session, counter_type, ans_pack.FCnt.readUInt16BE(0))
+
+            let fport = ans_pack.FPort.readUInt8(0)
+            let fcount = ans_pack.FCnt.readUInt16BE(0)
+
+            counter_type = ans_pack.getDir() == 'up' ? LoRaWANCounterType.F_CNT_UP : (!fport || fport == 0 ? LoRaWANCounterType.NF_CNT_DWN : LoRaWANCounterType.AF_CNT_DWN)
+            //console.error(`Ans pack FCnt: ${fcount}, counter: ${counter_type}, session: ${device_session.f_cnt_up}, ${device_session.af_cnt_dwn}`)
+            updated_session = this.IncreaseDevCounter(ctx, updated_session, counter_type, fcount)
             
             //let {private_p, packet} = ChainLoRaWANPacketHelper.from(ans, owner, 7, date, [nc_id]); //TODO owner è sbagliato, bisogna mettere il dev_id ma bisogna gestire il caso della join accept        
             //promises.push(
