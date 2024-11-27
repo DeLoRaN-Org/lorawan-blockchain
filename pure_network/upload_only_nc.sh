@@ -20,7 +20,7 @@ for var in "$@"; do
     if [[ "--network-controller" == "${var}" || "-nc" == "${var}" ]]; then
         echo "Building preloader release binary..."
         current_wd=$(pwd)
-        cd ../../distributed-network-controller/preloader/
+        cd ../../DeLoRaN/preloader/
         cargo b --release
         cd $current_wd
         nc="-nc"
@@ -46,7 +46,7 @@ done
 # Distribute addresses to PEER_ADDRESSES, DEVICE_ADDRESSES, and ORDERER_ADDRESS
 PEER_ADDRESSES=()
 DEVICE_ADDRESSES=()
-ORDERER_ADDRESS=()
+ORDERER_ADDRESS=""
 
 for ((i = 0; i < ${#ADDRESSES[@]}; i++)); do
     if [ "$i" -lt "$((PEER_PER_ORG * ORG_NUM))" ]; then
@@ -54,7 +54,7 @@ for ((i = 0; i < ${#ADDRESSES[@]}; i++)); do
     elif [ "$i" -lt "$((${#ADDRESSES[@]} - 1))" ]; then
         DEVICE_ADDRESSES+=("${ADDRESSES[i]}")
     else
-        ORDERER_ADDRESS+=("${ADDRESSES[i]}")
+        ORDERER_ADDRESS="${ADDRESSES[i]}"
     fi
 done
 
@@ -79,10 +79,10 @@ uploadToPeer() {
 
     echo "peer${PEER_ID}.org${PEER_ORG_ID} - ${PEER_ADDR} ${PEER_ID} ${PEER_ORG_ID}"
 
-    rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../../distributed-network-controller/ -e                                                     ssh $PEER_ADDR:/root/distributed-network-controller
-    #rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../distributed-network-controller/preloader/*.json -e                                     ssh $PEER_ADDR:/opt/network-controller/config/
-    #rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../distributed-network-controller/preloader/src/sdr-lora-merged.py -e                     ssh $PEER_ADDR:/opt/network-controller/config/lora.py
-    #rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../distributed-network-controller/preloader/target/release/preloader              -e      ssh $PEER_ADDR:/opt/network-controller/bin/
+    rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../../DeLoRaN/ -e                                                     ssh $PEER_ADDR:/root/distributed-network-controller
+    #rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/*.json -e                                     ssh $PEER_ADDR:/opt/network-controller/config/
+    #rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/src/sdr-lora-merged.py -e                     ssh $PEER_ADDR:/opt/network-controller/config/lora.py
+    #rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf                     ../../DeLoRaN/preloader/target/release/preloader              -e      ssh $PEER_ADDR:/opt/network-controller/bin/
     #rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../application_and_chaincode/chaincode-ts-lorawan/ -e      ssh $PEER_ADDR:/root/chaincode
 }
 
@@ -92,7 +92,7 @@ uploadToDevice() {
     echo "Device ${PEER_ADDR}"
 
     rsync -q --mkpath -av --exclude=**/.git --exclude=**/node_modules --exclude=**/target --exclude=**/*.pdf ${PWD}/mini_scripts/vivado_commands.sh -e 'ssh -q' $PEER_ADDR:/root/vivado_commands.sh
-    rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../../distributed-network-controller/ -e 'ssh -q' $PEER_ADDR:/root/distributed-network-controller
+    rsync -q --mkpath -av --exclude=**/test-network* --exclude=**/.git --exclude=**/node_modules --exclude=**/*.pdf --exclude=**/target ../../DeLoRaN/ -e 'ssh -q' $PEER_ADDR:/root/distributed-network-controller
 }
 
 convert_to_ip() {

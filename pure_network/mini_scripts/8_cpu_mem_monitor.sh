@@ -1,0 +1,1 @@
+screen -S "monitor" -d -m ./cpu_mem_usage.sh

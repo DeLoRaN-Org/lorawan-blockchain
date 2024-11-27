@@ -79,6 +79,8 @@ export class LoRaWANDevices extends Contract {
     public async CreateDeviceConfig(ctx: Context, device_config: string): BlockchainAns<void> {
         console.log('Invoked CreateDeviceConfig')
         let dev: DeviceConfiguration = JSON.parse(device_config)
+        let id = ctx.clientIdentity.getMSPID()
+
         dev.owner = ctx.clientIdentity.getMSPID()
         let dev_id: string = Buffer.from(dev.dev_eui).toString('hex')
         const exists = (await this.configExists(ctx, dev_id)).content;
@@ -182,7 +184,9 @@ export class LoRaWANDevices extends Contract {
             throw new Error(`The device session for ${dev_addr} does not exist`);
         }
         let session: DeviceSession = JSON.parse(assetJSON.toString());
-        if (!this.verifyClientOrgMatchesOwnerOrg(ctx, session)) return
+        if (!this.verifyClientOrgMatchesOwnerOrg(ctx, session)) {
+            throw new Error(`The device ${dev_addr} does not belong to the client's org`);
+        }
 
         return {
             content: stringify(sortKeysRecursive(session, {ignoreArrayAtKeys: ignoredKeys}))
@@ -345,6 +349,33 @@ export class LoRaWANDevices extends Contract {
         if (!asset || asset.length === 0) {
             throw new Error(`The device ${devID} does not exist`);
         }
+        let dev_owner =  asset.toString();
+        //console.log(dev_owner)
+        return {
+            content: dev_owner
+        }
+    }
+    
+    @Transaction(true)
+    public async CreateFlag(ctx: Context): BlockchainAns<void> {
+        //console.log('Invoked GetDeviceOrg')
+        await ctx.stub.putState(`ConvergenceFlagTest`, Buffer.from('imaconvergenceflagtest'));
+        //console.log(dev_owner)
+        return {}
+    }
+
+    @Transaction(true)
+    public async ClearFlag(ctx: Context): BlockchainAns<void> {
+        //console.log('Invoked GetDeviceOrg')
+        await ctx.stub.putState(`ConvergenceFlagTest`, Buffer.from("notaflag"));
+        return {}
+    }
+    
+    @Transaction()
+    public async ReadFlag(ctx: Context): BlockchainAns<string> {
+        //console.log('Invoked GetDeviceOrg')
+
+        let asset = await ctx.stub.getState(`ConvergenceFlagTest`) || Buffer.from("notaflag");
         let dev_owner =  asset.toString();
         //console.log(dev_owner)
         return {

@@ -1,7 +1,7 @@
 export PEER_IP_ADDRESS=$(hostname -I | awk '{print $1}')
 
 export CCADDR="127.0.0.1" #chaincode addr, rimarrà localhost
-export PATH=/opt/network-controller/bin:/opt/fabric/bin:/opt/fabric/builders/ccaas:"$PATH"
+export PATH=/opt/network-controller/bin:/opt/fabric/bin:/opt/fabric/builders/ccaas:/opt/fabric/builders/ccaas/bin:"$PATH"
 export FABRIC_CFG_PATH=/opt/fabric/config
 
 
